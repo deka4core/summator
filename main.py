@@ -1,13 +1,12 @@
-from PyQt6 import uic
+import sys
+
 from PyQt6.QtWidgets import QApplication
+from widgets import MainWindow
 
 
 if __name__ == "__main__":
-    Form, Window = uic.loadUiType('untitled.ui')
+    app = QApplication(sys.argv)
+    executable = MainWindow()
+    executable.show()
 
-    app = QApplication([])
-    window = Window()
-    form = Form()
-    form.setupUi(window)
-    window.show()
-    app.exec()
+    sys.exit(app.exec())
