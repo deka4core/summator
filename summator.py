@@ -1,4 +1,10 @@
+from constants import NEGATIVE_ONE, BITNESS
+
+
 def summator(first_number: list, second_number: list, passing=0, index=7) -> list:
+    """ Сумматор двух чисел в двоичной СС, представленных в виде списка
+        :return output_number (list)
+    """
     if index < 0:
         return []
     x, y, p = first_number[index], second_number[index], passing
@@ -9,13 +15,14 @@ def summator(first_number: list, second_number: list, passing=0, index=7) -> lis
 
 
 def number_to_decimal(number_list: list) -> int:
+    """ Функция, которая переводит двоичные числа, представленные в списках, в десятичное число
+        :return output_number (int)
+    """
     output_number = 0
     is_negative = False
-    length = len(number_list)
     if number_list[0] == 1:
-        decrement = [1] * 8  # -1
-        number_list = list(map(lambda x: int(not x), summator(number_list, decrement)))
+        number_list = list(map(lambda x: int(not x), summator(number_list, NEGATIVE_ONE)))
         is_negative = True
-    for i in range(length):
-        output_number += 2 ** (length - (i + 1)) if number_list[i] == 1 else 0
+    for i in range(BITNESS):
+        output_number += 2 ** (BITNESS - (i + 1)) if number_list[i] == 1 else 0
     return -1 * output_number if is_negative else output_number
