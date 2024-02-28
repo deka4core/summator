@@ -1,12 +1,11 @@
-def summator(first_number: list, second_number: list) -> list:
-    p = 0
-    output_number = [0] * 8
-    for i in range(len(first_number) - 1, -1, -1):
-        x, y = first_number[i], second_number[i]
-        output_number[i] = int((p and ((not x and not y) or (x and y))) or (
-                not p and ((not x and y) or (x and not y))))  # МДНФ p(~x~y V xy) V ~p(~xy V x~y)
-        p = int((x and y) or (x and p) or (y and p))  # МДНФ xy V xp V yp
-    return output_number
+def summator(first_number: list, second_number: list, passing=0, index=7) -> list:
+    if index < 0:
+        return []
+    x, y, p = first_number[index], second_number[index], passing
+    f = int((p and ((not x and not y) or (x and y))) or (
+            not p and ((not x and y) or (x and not y))))  # МДНФ p(~x~y V xy) V ~p(~xy V x~y)
+    p = int((x and y) or (x and p) or (y and p))  # МДНФ xy V xp V yp
+    return summator(first_number, second_number, p, index - 1) + [f]
 
 
 def number_to_decimal(number_list: list) -> int:
