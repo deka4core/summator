@@ -1,0 +1,24 @@
+@font-face {
+    font-family: 'LCD';
+    src: url('resources/lcd.14.otf');
+}
+
+
+QWidget#CentralWidget {
+    background-image: url("resources/summator_ui.png");
+}
+
+QPushButton {
+    background-image: url("resources/button_0.png");
+    border-style: outset;
+}
+
+QPushButton:checked {
+    background-image: url("resources/button_1.png");
+}
+
+QLabel {
+    color: yellow;
+    font-size: 30px;
+    font-family: 'LCD';
+}
