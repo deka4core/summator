@@ -2,12 +2,16 @@ from constants import NEGATIVE_ONE, BITNESS
 
 
 def summator(first_number: list, second_number: list, passing=0, index=7) -> list:
-    """ Сумматор двух чисел в двоичной СС, представленных в виде списка
+    """ Сумматор двух чисел в двоичной СС.
+        :param first_number: Первое двоичное число в виде списка.
+        :param second_number: Второе двоичное число в виде списка.
+        :param passing: Переход с предыдущего разряда.
+        :param index: Индекс элемента числа.
         :return output_number (list)
     """
     if index < 0:
         return []
-    x, y, p = first_number[index], second_number[index], passing
+    x, y, p = first_number[index], second_number[index], passing  # Элементы ДЧ и переход
     f = int((p and ((not x and not y) or (x and y))) or (
             not p and ((not x and y) or (x and not y))))  # МДНФ p(~x~y V xy) V ~p(~xy V x~y)
     p = int((x and y) or (x and p) or (y and p))  # МДНФ xy V xp V yp
@@ -15,7 +19,8 @@ def summator(first_number: list, second_number: list, passing=0, index=7) -> lis
 
 
 def number_to_decimal(number_list: list) -> int:
-    """ Функция, которая переводит двоичные числа, представленные в списках, в десятичное число
+    """ Функция, которая переводит двоичное число в десятичное число.
+        :param number_list: Двоичное число в виде списка.
         :return output_number (int)
     """
     output_number = 0

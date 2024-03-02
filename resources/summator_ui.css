@@ -18,7 +18,8 @@ QPushButton:checked {
 }
 
 QLabel {
-    color: yellow;
+    color: green;
     font-size: 30px;
     font-family: 'LCD';
+    transparency: 0.3;
 }
