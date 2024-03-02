@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QObject
 from PyQt6.QtWidgets import QMainWindow, QPushButton, QWidget, QLabel, QGraphicsOpacityEffect
 from summator import summator, number_to_decimal
 from constants import *
@@ -17,8 +18,40 @@ class MainWindow(QMainWindow):
         self.setObjectName("CentralWidget")
         self.setCentralWidget(widget)
 
-        """ Инициализация эл-тов интерфейса(кнопок и текста) """
         self.labels, self.buttons = [], []  # Матрица элементов интерфейса
+        self.initialize_buttons_and_labels()
+
+    def update_event(self):
+        """ QEvent на нажатие по первым двум рядам кнопок.
+            Изменяет изображение на кнопке, а так же обновляет результаты вычислений.
+        """
+        sender: QObject = self.sender()  # Хранение объекта, вызвавшего метод.
+        self.update_database_data(sender)
+        self.display_result()
+
+    def update_database_data(self, obj: QObject):
+        """ Обновление значений в БД.
+        :param obj: Источник сигнала.
+        """
+        if obj in self.buttons[0]:
+            index = self.buttons[0].index(obj)
+            database.first_numbers[index] = obj.isChecked()
+        elif obj in self.buttons[1]:
+            index = self.buttons[1].index(obj)
+            database.second_numbers[index] = obj.isChecked()
+
+    @staticmethod
+    def calculate_numbers() -> list:
+        """ Вычисление результата
+        :return list: Список из трех десятичных чисел
+        """
+        database.third_numbers = summator(database.first_numbers, database.second_numbers)
+        return list(map(lambda x: number_to_decimal(x), [database.first_numbers,
+                                                         database.second_numbers,
+                                                         database.third_numbers]))
+
+    def initialize_buttons_and_labels(self):
+        """ Инициализация эл-тов интерфейса(кнопок и текста) """
         for i in range(3):
             self.buttons.append(list())
             self.labels.append(QLabel("0", self))
@@ -39,30 +72,20 @@ class MainWindow(QMainWindow):
                                                BGROUP_TOP_MARGIN + (i * BUTTON_TOP_MARGIN), BUTTON_WSIZE, BUTTON_HSIZE)
                 if i <= 1:
                     self.buttons[i][j].setCheckable(True)  # Два ряда кнопок можно прожать
-                    self.buttons[i][j].clicked.connect(self.change_button_image)
+                    self.buttons[i][j].clicked.connect(self.update_event)
 
-    def change_button_image(self):
-        """ QEvent на нажатие по первым двум рядам кнопок.
-            Изменяет изображение на кнопке, а так же обновляет результаты вычислений.
-        """
-        sender: QPushButton = self.sender()  # Хранение объекта, вызвавшего метод.
-
-        """ Обновление значений в БД """
-        if sender in self.buttons[0]:
-            index = self.buttons[0].index(sender)
-            database.first_numbers[index] = sender.isChecked()
-        elif sender in self.buttons[1]:
-            index = self.buttons[1].index(sender)
-            database.second_numbers[index] = sender.isChecked()
-
+    def display_result(self):
         """ Вычисление результата и отображение на экране """
-        database.third_numbers = summator(database.first_numbers, database.second_numbers)
-        for i in range(BITNESS):
-            self.buttons[2][i].setStyleSheet('QPushButton {background-image:url(' +
-                                             f"resources/button_{database.third_numbers[i]}.png" + ');}')
-
-        output_numbers = list(map(lambda x: number_to_decimal(x), [database.first_numbers,
-                                                                   database.second_numbers,
-                                                                   database.third_numbers]))
-        for i in range(3):
-            self.labels[i].setText(str(output_numbers[i]))
+        output_numbers = self.calculate_numbers()
+        if not (-128 <= sum(output_numbers[:2]) <= 127):
+            for i in range(BITNESS):
+                self.buttons[2][i].setStyleSheet('QPushButton {background-image:url(resources/button_0.png);}')
+            for i in range(2):
+                self.labels[i].setText(str(output_numbers[i]))
+            self.labels[2].setText(str('Error'))
+        else:
+            for i in range(BITNESS):
+                self.buttons[2][i].setStyleSheet('QPushButton {background-image:url(' +
+                                                 f"resources/button_{database.third_numbers[i]}.png" + ');}')
+            for i in range(3):
+                self.labels[i].setText(str(output_numbers[i]))
